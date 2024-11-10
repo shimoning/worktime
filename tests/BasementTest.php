@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class BasementTest extends TestCase
 {
     /**
-     * 過去時間を指定してエラーが出ることを確認する
+     * 開始より過去の終了時間を指定してエラーが出ることを確認する
      *
      * @return void
      */
