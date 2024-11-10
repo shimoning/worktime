@@ -29,7 +29,7 @@ class BasementTest extends TestCase
      */
     public function test_diffInMinutes_parse_unixtime()
     {
-        // 0 = 1970-01-01 09:00:00
+        // 0 = 1970-01-01 00:00:00
         $this->assertEquals(0, Basement::diffInMinutes(0, 0), '同じ時刻');
         $this->assertEquals(0, Basement::diffInMinutes(0, 1), '1秒');
         $this->assertEquals(1, Basement::diffInMinutes(0, 60), '1分');

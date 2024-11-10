@@ -12,7 +12,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_exception_before()
+    public function test_exception_before()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The end time must be after the start time.');
@@ -27,7 +27,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_exception_negative_hour()
+    public function test_exception_negative_hour()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The hour must be greater than or equal to 0.');
@@ -41,7 +41,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_exception_over_24hours()
+    public function test_exception_over_24hours()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The hour must be less than 24.');
@@ -55,9 +55,9 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_parse_unixtime()
+    public function test_parse_unixtime()
     {
-        // 0 = 1970-01-01 03:00:00
+        // 0 = 1970-01-01 00:00:00
         $this->assertEquals(0, EarlyMorning::getMinutes(0, 0), '同じ時刻');
         $this->assertEquals(0, EarlyMorning::getMinutes(0, 1), '1秒');
         $this->assertEquals(1, EarlyMorning::getMinutes(0, 60), '1分');
@@ -73,7 +73,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_parse_carbon()
+    public function test_parse_carbon()
     {
         $carbon = Carbon::parse('2024-01-01 02:00:00');
         $this->assertEquals(0, EarlyMorning::getMinutes($carbon, $carbon), '同じ時刻');
@@ -87,7 +87,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_round()
+    public function test_round()
     {
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 06:00:00', '2024-01-01 07:00:00'), '範囲外');
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00'), '範囲外~早朝開始丁度');
@@ -120,7 +120,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_ceil()
+    public function test_ceil()
     {
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 06:00:00', '2024-01-01 07:00:00', RoundingMethod::CEIL), '範囲外');
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00', RoundingMethod::CEIL), '範囲外~深夜開始丁度');
@@ -153,7 +153,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_floor()
+    public function test_floor()
     {
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 06:00:00', '2024-01-01 07:00:00', RoundingMethod::FLOOR), '範囲外');
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '範囲外~深夜開始丁度');
@@ -186,7 +186,7 @@ class EarlyMorningTest extends TestCase
      *
      * @return void
      */
-    public function test_getMinutes_hour()
+    public function test_hour()
     {
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 06:00:00', '2024-01-01 07:00:00', RoundingMethod::ROUND, 4), '範囲外: -1');
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 06:00:00', '2024-01-01 07:00:00', RoundingMethod::ROUND, 6), '範囲外: +1');

@@ -36,6 +36,9 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit --testdox",
+        "test:overnight": "vendor/bin/phpunit --testsuite Overnight --testdox",
+        "test:basement": "vendor/bin/phpunit --testsuite Basement --testdox",
+        "test:partials": "vendor/bin/phpunit --testsuite Partials --testdox",
         "dev": "@php psysh.php"
     }
 }

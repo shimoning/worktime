@@ -11,7 +11,6 @@ use Shimoning\Worktime\Constants\RoundingMethod;
  * (深夜労働となる時間帯のうち、日付が変わった後の時間)
  *
  * 実装時の法律だと 0-5時 が早朝時間となる (深夜:22-翌5時)
- * 1日までの日跨ぎを考慮する (2日以上はエラー)
  */
 class EarlyMorning
 {

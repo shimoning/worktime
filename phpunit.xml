@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <phpunit colors="true" verbose="true" bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite name="All tests">
-            <directory>tests/</directory>
+        <testsuite name="All">
+            <directory suffix="Test.php">tests/</directory>
+        </testsuite>
+        <testsuite name="Overnight">
+            <file>tests/OvernightWorktimeTest.php</file>
+        </testsuite>
+        <testsuite name="Basement">
+            <file>tests/BasementTest.php</file>
+        </testsuite>
+        <testsuite name="Partials">
+            <file>tests/EarlyMorningTest.php</file>
+            <file>tests/LateNightTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
