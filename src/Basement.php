@@ -2,7 +2,8 @@
 
 namespace Shimoning\Worktime;
 
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use Carbon\CarbonImmutable;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
 class Basement
@@ -10,18 +11,18 @@ class Basement
     /**
      * 差分を分単位で取得する
      *
-     * @param string|int|Carbon $start
-     * @param string|int|Carbon $end
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
      * @param RoundingMethod|string|callable|null $rounding
      * @return int|float
      */
     static public function diffInMinutes(
-        string|int|Carbon $start,
-        string|int|Carbon $end,
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
         RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
     ): int|float {
-        $start = Carbon::parse($start);
-        $end = Carbon::parse($end);
+        $start = CarbonImmutable::parse($start);
+        $end = CarbonImmutable::parse($end);
 
         // 終了が開始より前の時はエラー
         if ($end->isBefore($start)) {
@@ -44,13 +45,13 @@ class Basement
     /**
      * 閾いとなる時間を取得する
      *
-     * @param string|int|Carbon $datetime
+     * @param string|int|CarbonInterface $datetime
      * @param int $hour
-     * @return Carbon
+     * @return CarbonInterface
      */
-    static public function getThreshold(string|int|Carbon $datetime, int $hour): Carbon
+    static public function getThreshold(string|int|CarbonInterface $datetime, int $hour): CarbonInterface
     {
-        return Carbon::parse($datetime)
+        return CarbonImmutable::parse($datetime)
             ->setHour($hour)
             ->setMinute(0)
             ->setSecond(0)
