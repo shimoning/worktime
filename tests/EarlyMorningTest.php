@@ -33,6 +33,21 @@ class EarlyMorningTest extends TestCase
         $this->expectExceptionMessage('The hour must be greater than or equal to 0.');
 
         EarlyMorning::getMinutes('2024-01-02 03:00:00', '2024-01-02 10:00:00', null, -1);
+        EarlyMorning::getMinutes('2024-01-02 03:00:00', '2024-01-02 10:00:00', null, -999);
+    }
+
+    /**
+     * 24以上の時間を指定してエラーが出ることを確認する
+     *
+     * @return void
+     */
+    public function test_getMinutes_exception_over_24hours()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The hour must be less than 24.');
+
+        EarlyMorning::getMinutes('2024-01-02 03:00:00', '2024-01-02 10:00:00', null, 24);
+        EarlyMorning::getMinutes('2024-01-02 03:00:00', '2024-01-02 10:00:00', null, 999);
     }
 
     /**
@@ -75,8 +90,8 @@ class EarlyMorningTest extends TestCase
     public function test_getMinutes_round()
     {
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 06:00:00', '2024-01-01 07:00:00'), '範囲外');
-        $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00'), '範囲外~深夜開始丁度');
-        $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:01'), '範囲外~深夜開始後1秒');
+        $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00'), '範囲外~早朝開始丁度');
+        $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:01'), '範囲外~早朝開始後1秒');
 
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 03:00:00', '2024-01-01 03:00:00'), '同じ時間');
         $this->assertEquals(0, EarlyMorning::getMinutes('2024-01-01 05:00:00', '2024-01-01 05:00:00'), '終了時刻');
@@ -90,8 +105,8 @@ class EarlyMorningTest extends TestCase
         $this->assertEquals(60, EarlyMorning::getMinutes('2024-01-01 03:00:00', '2024-01-01 04:00:00'), '1時間');
         $this->assertEquals(60, EarlyMorning::getMinutes('2024-01-01 03:00:00', '2024-01-01 04:00:01'), '1時間1秒');
 
-        $this->assertEquals(240, EarlyMorning::getMinutes('2024-01-01 00:00:00', '2024-01-01 04:00:00'), '早朝開始時間丁度');
-        $this->assertEquals(240, EarlyMorning::getMinutes('2024-01-01 23:00:00', '2024-01-02 04:00:00'), '早朝開始時間跨ぎ');
+        $this->assertEquals(240, EarlyMorning::getMinutes('2024-01-01 00:00:00', '2024-01-01 04:00:00'), '早朝終了時間丁度');
+        $this->assertEquals(240, EarlyMorning::getMinutes('2024-01-01 23:00:00', '2024-01-02 04:00:00'), '早朝終了時間跨ぎ');
 
         $this->assertEquals(120, EarlyMorning::getMinutes('2024-01-01 03:00:00', '2024-01-01 05:00:00'), '早朝終了時間丁度');
         $this->assertEquals(120, EarlyMorning::getMinutes('2024-01-01 03:00:00', '2024-01-01 06:00:00'), '早朝終了時間跨ぎ');

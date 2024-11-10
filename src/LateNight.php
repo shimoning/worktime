@@ -7,28 +7,28 @@ use Carbon\CarbonImmutable;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
 /**
- * 早朝時間の計算
- * (深夜労働となる時間帯のうち、日付が変わった後の時間)
+ * 夜間時間計算
+ * (深夜労働となる時間帯のうち、日付が変わるまでの時間)
  *
- * 実装時の法律だと 0-5時 が早朝時間となる (深夜:22-翌5時)
+ * 実装時の法律だと 22-24時 が夜間時間となる (深夜:22-翌5時)
  * 1日までの日跨ぎを考慮する (2日以上はエラー)
  */
-class EarlyMorning
+class LateNight
 {
     /**
-     * 早朝時間を分単位で取得する
+     * 夜間時間の計算 (分)
      *
      * @param string|int|CarbonInterface $start
      * @param string|int|CarbonInterface $end
      * @param RoundingMethod|string|callable|null $rounding
-     * @param int $hour 早朝が終わる時間 (default: 5時)
+     * @param int $hour 夜間が始まる時間 (default: 22時)
      * @return int|float
      */
     static public function getMinutes(
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
         RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
-        int $hour = 5,
+        int $hour = 22,
     ): int|float {
         $start = CarbonImmutable::parse($start);
         $end = CarbonImmutable::parse($end);
@@ -66,7 +66,7 @@ class EarlyMorning
                     $minutes += self::getMinutesInternal($startDay, $end, $rounding, $hour);
                 } else {
                     // 中間日
-                    $minutes += $hour * 60;
+                    $minutes += (24 - $hour) * 60;
                 }
             }
             return $minutes;
@@ -74,7 +74,7 @@ class EarlyMorning
     }
 
     /**
-     * 日を考慮せずに早朝時間の計算 (分)
+     * 日を考慮せずに夜間時間の計算 (分)
      * $start <= $end が保証されていること
      *
      * @param CarbonInterface $start
@@ -84,26 +84,25 @@ class EarlyMorning
      * @return integer|float
      */
     static private function getMinutesInternal(
-        string|int|CarbonInterface $start,
-        string|int|CarbonInterface $end,
-        RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
-        int $hour = 5,
+        CarbonInterface $start,
+        CarbonInterface $end,
+        RoundingMethod $rounding,
+        int $hour,
     ): int|float {
-        // 開始が $hour を過ぎていれば早朝なし
-        if ($start->hour >= $hour) {
-            return 0;
+        if ($start->isSameDay($end)) {
+            // 終了が $hour より前の場合は夜間なし
+            if ($end->hour < $hour) {
+                return 0;
+            }
+        } else {
+            // 日を跨いでいた場合、終了はその日の24時までとする
+            $end = Basement::getThreshold($start, 24);
         }
 
-        if (! $start->isSameDay($end)) {
-            // 日を跨いでいた場合、終了はその日の $hour までとする
-            $end = Basement::getThreshold($start, $hour);
+        // 開始が夜間時間の前だったら、 $hour を開始とする
+        if ($start->hour < $hour) {
+            $start = Basement::getThreshold($start, $hour);
         }
-
-        // 終了が過ぎていたら $hour を終了とする
-        if ($end->hour >= $hour) {
-            $end = Basement::getThreshold($end, $hour);
-        }
-
         return Basement::diffInMinutes($start, $end, $rounding);
     }
 }
