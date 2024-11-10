@@ -40,4 +40,21 @@ class Basement
         }
         return $rounding?->round($diff) ?? $diff;
     }
+
+    /**
+     * 閾いとなる時間を取得する
+     *
+     * @param string|int|Carbon $datetime
+     * @param int $hour
+     * @return Carbon
+     */
+    static public function getThreshold(string|int|Carbon $datetime, int $hour): Carbon
+    {
+        return Carbon::parse($datetime)
+            ->setHour($hour)
+            ->setMinute(0)
+            ->setSecond(0)
+            ->setMilliseconds(0)
+            ->setMicroseconds(0);
+    }
 }

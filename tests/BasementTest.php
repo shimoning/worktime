@@ -143,4 +143,42 @@ class BasementTest extends TestCase
         $this->assertEquals(1440, Basement::diffInMinutes('2024-01-01 00:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '日跨ぎ:0時:24時間');
         $this->assertEquals(1440, Basement::diffInMinutes('2024-01-01 00:00:00', '2024-01-02 00:00:01', RoundingMethod::FLOOR), '日跨ぎ:0時:24時間1秒');
     }
+
+    /**
+     * getThreshold で unixtime がパースできることを確認する
+     *
+     * @return void
+     */
+    public function test_getThreshold_parse_unixtime()
+    {
+        $this->assertEquals('1970-01-01 09:00:00', Basement::getThreshold(0, 9)->format('Y-m-d H:i:s'));
+        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold(1704099600, 10)->format('Y-m-d H:i:s'));
+        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold(1704099600, 10)->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * getThreshold で carbon がパースできることを確認する
+     *
+     * @return void
+     */
+    public function test_getThreshold_parse_carbon()
+    {
+        $carbon = Carbon::parse('2024-01-01 00:00:00');
+        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold($carbon, 10)->format('Y-m-d H:i:s'));
+
+        $carbon2 = Carbon::parse('2024-01-01 09:00:00');
+        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold($carbon2, 10)->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * getThreshold で時間を取得できることを確認する
+     *
+     * @return void
+     */
+    public function test_getThreshold()
+    {
+        $this->assertEquals('2024-01-01 09:00:00', Basement::getThreshold('2024-01-01 09:00:00', 9)->format('Y-m-d H:i:s'), '同じ時刻');
+        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold('2024-01-01 09:00:00', 10)->format('Y-m-d H:i:s'), '1時間後');
+        $this->assertEquals('2024-01-01 00:00:00', Basement::getThreshold('2024-01-01 10:00:00', 0)->format('Y-m-d H:i:s'), '0時間');
+    }
 }
