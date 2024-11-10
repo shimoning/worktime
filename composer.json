@@ -1,6 +1,6 @@
 {
     "name": "shimoning/worktime",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "労働時間などを計算する",
     "minimum-stability": "stable",
     "type": "library",
@@ -39,6 +39,7 @@
         "test:overnight": "vendor/bin/phpunit --testsuite Overnight --testdox",
         "test:basement": "vendor/bin/phpunit --testsuite Basement --testdox",
         "test:partials": "vendor/bin/phpunit --testsuite Partials --testdox",
+        "test:utilities": "vendor/bin/phpunit --testsuite Utilities --testdox",
         "dev": "@php psysh.php"
     }
 }

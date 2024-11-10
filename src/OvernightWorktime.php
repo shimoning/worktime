@@ -2,7 +2,8 @@
 
 namespace Shimoning\Worktime;
 
-use Carbon\Carbon;
+use CarbonInterface\CarbonInterfaceInterface;
+use Shimoning\Worktime\Utilities\Round;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
 /**
@@ -14,24 +15,43 @@ use Shimoning\Worktime\Constants\RoundingMethod;
 class OvernightWorktime
 {
     /**
-     * 深夜時間の計算 (分)
+     * 深夜時間を分単位で取得する
      *
-     * @param string|int|Carbon $start
-     * @param string|int|Carbon $end
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
      * @param RoundingMethod|string|callable|null $rounding
      * @param int $lateNightStartHour 夜間が始まる時間 (default: 22時)
      * @param int $earlyMorningEndHour 早朝が終わる時間 (default: 5時)
      * @return int|float
      */
     static public function getMinutes(
-        string|int|Carbon $start,
-        string|int|Carbon $end,
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
         RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
         int $lateNightStartHour = 22,
         int $earlyMorningEndHour = 5,
     ): int|float {
-        $lateNight = LateNight::getMinutes($start, $end, $rounding, $lateNightStartHour);
-        $earlyMorning = EarlyMorning::getMinutes($start, $end, $rounding, $earlyMorningEndHour);
+        $diffSeconds = self::getSeconds($start, $end, $lateNightStartHour, $earlyMorningEndHour);
+        return Round::calculate($diffSeconds / 60, $rounding);
+    }
+
+    /**
+     * 深夜時間を秒単位で取得する
+     *
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
+     * @param int $lateNightStartHour 夜間が始まる時間 (default: 22時)
+     * @param int $earlyMorningEndHour 早朝が終わる時間 (default: 5時)
+     * @return int|float
+     */
+    static public function getSeconds(
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
+        int $lateNightStartHour = 22,
+        int $earlyMorningEndHour = 5,
+    ): int|float {
+        $lateNight = LateNight::getSeconds($start, $end, $lateNightStartHour);
+        $earlyMorning = EarlyMorning::getSeconds($start, $end, $earlyMorningEndHour);
         return $lateNight + $earlyMorning;
     }
 }

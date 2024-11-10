@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use Shimoning\Worktime\Basement;
 use Shimoning\Worktime\Constants\RoundingMethod;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 
 class BasementTest extends TestCase
 {
@@ -12,14 +12,27 @@ class BasementTest extends TestCase
      *
      * @return void
      */
-    public function test_diffInMinutes_exception_before()
+    public function test_diffInSeconds_exception_before()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The end time must be after the start time.');
 
-        Basement::diffInMinutes('2024-01-02 09:00:00', '2024-01-02 08:00:00');
-        Basement::diffInMinutes('2024-01-03 09:00:00', '2024-01-02 09:00:00');
-        Basement::diffInMinutes('2024-01-03 00:00:00', '2024-01-02 00:00:00');
+        Basement::diffInSeconds('2024-01-02 09:00:00', '2024-01-02 08:00:00');
+        Basement::diffInSeconds('2024-01-03 09:00:00', '2024-01-02 09:00:00');
+        Basement::diffInSeconds('2024-01-03 00:00:00', '2024-01-02 00:00:00');
+    }
+
+    /**
+     * 文字列 がパースできることを確認する
+     * TODO: 他のフォーマットの時間もテストする
+     *
+     * @return void
+     */
+    public function test_diffInSeconds_parse_string()
+    {
+        $this->assertEquals(0, Basement::diffInSeconds('2024-01-01 09:00:00', '2024-01-01 09:00:00'), '同じ時刻');
+
+        $this->assertEquals(3601, Basement::diffInSeconds('2024-01-01 09:00:00', '2024-01-01 10:00:01'), '1時間1秒');
     }
 
     /**
@@ -27,31 +40,31 @@ class BasementTest extends TestCase
      *
      * @return void
      */
-    public function test_diffInMinutes_parse_unixtime()
+    public function test_diffInSeconds_parse_unixtime()
     {
         // 0 = 1970-01-01 00:00:00
-        $this->assertEquals(0, Basement::diffInMinutes(0, 0), '同じ時刻');
-        $this->assertEquals(0, Basement::diffInMinutes(0, 1), '1秒');
-        $this->assertEquals(1, Basement::diffInMinutes(0, 60), '1分');
+        $this->assertEquals(0, Basement::diffInSeconds(0, 0), '同じ時刻');
+        $this->assertEquals(1, Basement::diffInSeconds(0, 1), '1秒');
+        $this->assertEquals(60, Basement::diffInSeconds(0, 60), '1分');
 
         // 1704099600 = 2024-01-01 09:00:00
-        $this->assertEquals(0, Basement::diffInMinutes(1704099600, 1704099600), '同じ時刻');
-        $this->assertEquals(0, Basement::diffInMinutes(1704099600, 1704099601), '1秒');
-        $this->assertEquals(1, Basement::diffInMinutes(1704099600, 1704099660), '1分');
+        $this->assertEquals(0, Basement::diffInSeconds(1704099600, 1704099600), '同じ時刻');
+        $this->assertEquals(1, Basement::diffInSeconds(1704099600, 1704099601), '1秒');
+        $this->assertEquals(60, Basement::diffInSeconds(1704099600, 1704099660), '1分');
     }
 
     /**
-     * Carbon がパースできることを確認する
+     * CarbonImmutable がパースできることを確認する
      *
      * @return void
      */
-    public function test_diffInMinutes_parse_carbon()
+    public function test_diffInSeconds_parse_CarbonImmutable()
     {
-        $carbon = Carbon::parse('2024-01-01 09:00:00');
-        $this->assertEquals(0, Basement::diffInMinutes($carbon, $carbon), '同じ時刻');
+        $CarbonImmutable = CarbonImmutable::parse('2024-01-01 09:00:00');
+        $this->assertEquals(0, Basement::diffInSeconds($CarbonImmutable, $CarbonImmutable), '同じ時刻');
 
-        $carbon2 = Carbon::parse('2024-01-01 10:00:01');
-        $this->assertEquals(60, Basement::diffInMinutes($carbon, $carbon2), '1時間1秒');
+        $CarbonImmutable2 = CarbonImmutable::parse('2024-01-01 10:00:01');
+        $this->assertEquals(3601, Basement::diffInSeconds($CarbonImmutable, $CarbonImmutable2), '1時間1秒');
     }
 
     /**
@@ -142,43 +155,5 @@ class BasementTest extends TestCase
 
         $this->assertEquals(1440, Basement::diffInMinutes('2024-01-01 00:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '日跨ぎ:0時:24時間');
         $this->assertEquals(1440, Basement::diffInMinutes('2024-01-01 00:00:00', '2024-01-02 00:00:01', RoundingMethod::FLOOR), '日跨ぎ:0時:24時間1秒');
-    }
-
-    /**
-     * getThreshold で unixtime がパースできることを確認する
-     *
-     * @return void
-     */
-    public function test_getThreshold_parse_unixtime()
-    {
-        $this->assertEquals('1970-01-01 09:00:00', Basement::getThreshold(0, 9)->format('Y-m-d H:i:s'));
-        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold(1704099600, 10)->format('Y-m-d H:i:s'));
-        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold(1704099600, 10)->format('Y-m-d H:i:s'));
-    }
-
-    /**
-     * getThreshold で carbon がパースできることを確認する
-     *
-     * @return void
-     */
-    public function test_getThreshold_parse_carbon()
-    {
-        $carbon = Carbon::parse('2024-01-01 00:00:00');
-        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold($carbon, 10)->format('Y-m-d H:i:s'));
-
-        $carbon2 = Carbon::parse('2024-01-01 09:00:00');
-        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold($carbon2, 10)->format('Y-m-d H:i:s'));
-    }
-
-    /**
-     * getThreshold で時間を取得できることを確認する
-     *
-     * @return void
-     */
-    public function test_getThreshold()
-    {
-        $this->assertEquals('2024-01-01 09:00:00', Basement::getThreshold('2024-01-01 09:00:00', 9)->format('Y-m-d H:i:s'), '同じ時刻');
-        $this->assertEquals('2024-01-01 10:00:00', Basement::getThreshold('2024-01-01 09:00:00', 10)->format('Y-m-d H:i:s'), '1時間後');
-        $this->assertEquals('2024-01-01 00:00:00', Basement::getThreshold('2024-01-01 10:00:00', 0)->format('Y-m-d H:i:s'), '0時間');
     }
 }

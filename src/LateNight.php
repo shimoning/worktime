@@ -4,6 +4,8 @@ namespace Shimoning\Worktime;
 
 use Carbon\CarbonInterface;
 use Carbon\CarbonImmutable;
+use Shimoning\Worktime\Utilities\Threshold;
+use Shimoning\Worktime\Utilities\Round;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
 /**
@@ -15,7 +17,7 @@ use Shimoning\Worktime\Constants\RoundingMethod;
 class LateNight
 {
     /**
-     * 夜間時間の計算 (分)
+     * 夜間時間を分単位で取得する
      *
      * @param string|int|CarbonInterface $start
      * @param string|int|CarbonInterface $end
@@ -27,6 +29,23 @@ class LateNight
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
         RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
+        int $hour = 22,
+    ): int|float {
+        $diffSeconds = self::getSeconds($start, $end, $hour);
+        return Round::calculate($diffSeconds / 60, $rounding);
+    }
+
+    /**
+     * 夜間時間を秒単位で取得する
+     *
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
+     * @param int $hour 夜間が始まる時間 (default: 22時)
+     * @return int|float
+     */
+    static public function getSeconds(
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
         int $hour = 22,
     ): int|float {
         $start = CarbonImmutable::parse($start);
@@ -48,44 +67,42 @@ class LateNight
 
         if ($start->isSameDay($end)) {
             // 日跨ぎなし
-            return self::getMinutesInternal($start, $end, $rounding, $hour);
+            return self::getSecondsInternal($start, $end, $hour);
         } else {
             // 日跨ぎあり
             $days = $end->copy()->startOfDay()->diffInDays($start->copy()->startOfDay());
 
-            $minutes = 0;
+            $seconds = 0;
             for ($day = 0; $day <= $days; $day++) {
                 if ($day === 0) {
                     // 初日
-                    $endDay = Basement::getThreshold($start, 24);
-                    $minutes += self::getMinutesInternal($start, $endDay, $rounding, $hour);
+                    $endDay = Threshold::get($start, 24);
+                    $seconds += self::getSecondsInternal($start, $endDay, $hour);
                 } else if ($day === $days) {
                     // 最終日
-                    $startDay = Basement::getThreshold($end, 0);
-                    $minutes += self::getMinutesInternal($startDay, $end, $rounding, $hour);
+                    $startDay = Threshold::get($end, 0);
+                    $seconds += self::getSecondsInternal($startDay, $end, $hour);
                 } else {
                     // 中間日
-                    $minutes += (24 - $hour) * 60;
+                    $seconds += (24 - $hour) * 3600;
                 }
             }
-            return $minutes;
+            return $seconds;
         }
     }
 
     /**
-     * 日を考慮せずに夜間時間の計算 (分)
+     * 日を考慮せずに夜間時間の計算 (秒)
      * $start <= $end が保証されていること
      *
      * @param CarbonInterface $start
      * @param CarbonInterface $end
-     * @param RoundingMethod $rounding
      * @param integer $hour
      * @return integer|float
      */
-    static private function getMinutesInternal(
+    static private function getSecondsInternal(
         CarbonInterface $start,
         CarbonInterface $end,
-        RoundingMethod $rounding,
         int $hour,
     ): int|float {
         if ($start->isSameDay($end)) {
@@ -95,13 +112,13 @@ class LateNight
             }
         } else {
             // 日を跨いでいた場合、終了はその日の24時までとする
-            $end = Basement::getThreshold($start, 24);
+            $end = Threshold::get($start, 24);
         }
 
         // 開始が夜間時間の前だったら、 $hour を開始とする
         if ($start->hour < $hour) {
-            $start = Basement::getThreshold($start, $hour);
+            $start = Threshold::get($start, $hour);
         }
-        return Basement::diffInMinutes($start, $end, $rounding);
+        return Basement::diffInSeconds($start, $end);
     }
 }
