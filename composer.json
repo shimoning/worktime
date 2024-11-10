@@ -1,0 +1,41 @@
+{
+    "name": "shimoning/worktime",
+    "version": "0.0.1",
+    "description": "労働時間などを計算する",
+    "minimum-stability": "stable",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shimon Haga",
+            "email": "shimon.haga@shimoning.com"
+        }
+    ],
+    "keywords": [
+        "work",
+        "time",
+        "hours",
+        "minutes",
+        "overtime",
+        "midnight",
+        "early morning",
+        "extra work"
+    ],
+    "require": {
+        "php": ">=8.1",
+        "nesbot/carbon": "^2.0"
+    },
+    "require-dev": {
+        "psy/psysh": "@stable",
+        "phpunit/phpunit": "^7 | ^8 | ^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shimoning\\Worktime\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --testdox",
+        "dev": "@php psysh.php"
+    }
+}
