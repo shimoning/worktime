@@ -2,11 +2,13 @@
 
 namespace Shimoning\Worktime;
 
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use Carbon\CarbonImmutable;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
 /**
  * 早朝時間の計算
+ * (深夜労働となる時間帯のうち、日付が変わった後の時間)
  *
  * 実装時の法律だと 0-5時 が早朝時間となる (深夜:22-翌5時)
  * 1日までの日跨ぎを考慮する (2日以上はエラー)
@@ -16,82 +18,92 @@ class EarlyMorning
     /**
      * 早朝時間を分単位で取得する
      *
-     * @param string|int|Carbon $start
-     * @param string|int|Carbon $end
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
      * @param RoundingMethod|string|callable|null $rounding
      * @param int $hour 早朝が終わる時間 (default: 5時)
      * @return int|float
      */
     static public function getMinutes(
-        string|int|Carbon $start,
-        string|int|Carbon $end,
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
         RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
         int $hour = 5,
     ): int|float {
-        $start = Carbon::parse($start);
-        $end = Carbon::parse($end);
+        $start = CarbonImmutable::parse($start);
+        $end = CarbonImmutable::parse($end);
 
         // 終了が開始より前の時はエラー
         if ($end->isBefore($start)) {
             throw new \InvalidArgumentException('The end time must be after the start time.');
         }
 
-        // 終了が開始より2日以上だったらエラー
-        if ($end->diffInDays($start) > 1) {
-            throw new \InvalidArgumentException('The end time must be within 1 day from the start time.');
-        }
-
         // 時間が負の場合はエラー
         if ($hour < 0) {
             throw new \InvalidArgumentException('The hour must be greater than or equal to 0.');
         }
+        // 時間が24以上の場合はエラー
+        if ($hour >= 24) {
+            throw new \InvalidArgumentException('The hour must be less than 24.');
+        }
 
-        // 日跨ぎなし
         if ($start->isSameDay($end)) {
-            // 開始が過ぎている : $hour < $start <= $end
-            if ($start->hour >= $hour) {
-                return 0;
-            }
+            // 日跨ぎなし
+            return self::getMinutesInternal($start, $end, $rounding, $hour);
+        } else {
+            // 日跨ぎあり
+            $days = $end->copy()->startOfDay()->diffInDays($start->copy()->startOfDay());
 
-            // 終了が過ぎている : 0 < $start < $hour < $end
-            if ($end->hour >= $hour) {
-                $threshold = Basement::getThreshold($end, $hour);
-                return Basement::diffInMinutes($start, $threshold, $rounding);
-            }
-
-            // 開始も終了も早朝時間帯の中 : 0 < $start < $end < $hour
-            return Basement::diffInMinutes($start, $end, $rounding);
-        }
-
-        // 日跨ぎあり
-        else {
-            // 開始が過ぎている: $start < 24 = 0 < $end
-            if ($start->hour >= $hour) {
-                // 終了が過ぎている = $hour までの時間がそのまま早朝
-                if ($end->hour >= $hour) {
-                    return $hour * 60;
+            $minutes = 0;
+            for ($day = 0; $day <= $days; $day++) {
+                if ($day === 0) {
+                    // 初日
+                    $endDay = Basement::getThreshold($start, 24);
+                    $minutes += self::getMinutesInternal($start, $endDay, $rounding, $hour);
+                } else if ($day === $days) {
+                    // 最終日
+                    $startDay = Basement::getThreshold($end, 0);
+                    $minutes += self::getMinutesInternal($startDay, $end, $rounding, $hour);
+                } else {
+                    // 中間日
+                    $minutes += $hour * 60;
                 }
-
-                $midnight = Basement::getThreshold($end, 0);
-                return Basement::diffInMinutes($midnight, $end, $rounding);
             }
-
-            // 開始の時点で早朝時間がある
-            $threshold = Basement::getThreshold($start, $hour);
-            $startDiff = Basement::diffInMinutes($start, $threshold, $rounding);
-            $endDiff = 0;
-
-            // 終了時間が過ぎているかどうか
-            if ($end->hour >= $hour) {
-                // 過ぎている
-                $endDiff = $hour * 60;
-            } else {
-                // 過ぎていない
-                $midnight = Basement::getThreshold($end, 0);
-                $endDiff = Basement::diffInMinutes($midnight, $end, $rounding);
-            }
-
-            return $startDiff + $endDiff;
+            return $minutes;
         }
+    }
+
+    /**
+     * 日を考慮せずに早朝時間の計算 (分)
+     * $start <= $end が保証されていること
+     *
+     * @param CarbonInterface $start
+     * @param CarbonInterface $end
+     * @param RoundingMethod $rounding
+     * @param integer $hour
+     * @return integer|float
+     */
+    static private function getMinutesInternal(
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
+        RoundingMethod|string|callable|null $rounding = RoundingMethod::ROUND,
+        int $hour = 5,
+    ): int|float {
+        // 開始が $hour を過ぎていれば早朝なし
+        if ($start->hour >= $hour) {
+            return 0;
+        }
+
+        if (!$start->isSameDay($end)) {
+            // 日を跨いでいた場合、終了はその日の $hour までとする
+            $end = Basement::getThreshold($start, $hour);
+        }
+
+        // 終了が過ぎていたら $hour を終了とする
+        if ($end->hour >= $hour) {
+            $end = Basement::getThreshold($end, $hour);
+        }
+
+        return Basement::diffInMinutes($start, $end, $rounding);
     }
 }
