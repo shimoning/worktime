@@ -14,6 +14,9 @@
             <file>tests/EarlyMorningTest.php</file>
             <file>tests/LateNightTest.php</file>
         </testsuite>
+        <testsuite name="Entities">
+            <directory suffix="Test.php">tests/Entities</directory>
+        </testsuite>
         <testsuite name="Utilities">
             <directory suffix="Test.php">tests/Utilities</directory>
         </testsuite>

@@ -36,6 +36,47 @@ class TimeTest extends TestCase
      *
      * @return void
      */
+    public function test_fromSeconds()
+    {
+        $time = Time::fromSeconds(0);
+        $this->assertSame(0, $time->getMinutes(), '0 minute');
+        $this->assertSame(0, $time->getSeconds(), '0 second');
+
+        $time = Time::fromSeconds(1);
+        $this->assertSame(0, $time->getMinutes(), '0 minute');
+        $this->assertSame(1, $time->getSeconds(), '1 second');
+
+        $time = Time::fromSeconds(59);
+        $this->assertSame(0, $time->getMinutes(), '0 minute');
+        $this->assertSame(59, $time->getSeconds(), '59 seconds');
+
+        $time = Time::fromSeconds(60);
+        $this->assertSame(1, $time->getMinutes(), '1 minute');
+        $this->assertSame(0, $time->getSeconds(), '0 second');
+
+        $time = Time::fromSeconds(61);
+        $this->assertSame(1, $time->getMinutes(), '1 minute');
+        $this->assertSame(1, $time->getSeconds(), '1 second');
+
+
+        $time = Time::fromSeconds(3599);
+        $this->assertSame(59, $time->getMinutes(), '59 minutes');
+        $this->assertSame(59, $time->getSeconds(), '59 seconds');
+
+        $time = Time::fromSeconds(3600);
+        $this->assertSame(60, $time->getMinutes(), '60 minutes');
+        $this->assertSame(0, $time->getSeconds(), '0 seconds');
+
+        $time = Time::fromSeconds(3601);
+        $this->assertSame(60, $time->getMinutes(), '60 minutes');
+        $this->assertSame(1, $time->getSeconds(), '1 seconds');
+    }
+
+    /**
+     * 分を取得
+     *
+     * @return void
+     */
     public function test_getMinutes()
     {
         $time = new Time(0);

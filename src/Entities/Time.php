@@ -20,6 +20,19 @@ final class Time
     }
 
     /**
+     * 秒から Time オブジェクトを生成
+     *
+     * @param int|float $value
+     * @return self
+     */
+    static public function fromSeconds(int|float $value): self
+    {
+        $minutes = (int)floor($value / 60);
+        $seconds = $value % 60;
+        return new self($minutes, $seconds);
+    }
+
+    /**
      * 分を取得
      *
      * @return int
