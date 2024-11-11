@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use Carbon\CarbonImmutable;
 use Shimoning\Worktime\OvernightWorktime;
 use Shimoning\Worktime\Constants\RoundingMethod;
-use Carbon\CarbonImmutable;
 
 class OvernightWorktimeTest extends TestCase
 {
@@ -77,13 +77,13 @@ class OvernightWorktimeTest extends TestCase
      *
      * @return void
      */
-    public function test_parse_CarbonImmutable()
+    public function test_parse_carbon()
     {
-        $CarbonImmutable = CarbonImmutable::parse('2024-01-01 02:00:00');
-        $this->assertEquals(0, OvernightWorktime::getMinutes($CarbonImmutable, $CarbonImmutable), '同じ時刻');
+        $carbon = CarbonImmutable::parse('2024-01-01 02:00:00');
+        $this->assertEquals(0, OvernightWorktime::getMinutes($carbon, $carbon), '同じ時刻');
 
-        $CarbonImmutable = CarbonImmutable::parse('2024-01-01 22:00:00');
-        $this->assertEquals(0, OvernightWorktime::getMinutes($CarbonImmutable, $CarbonImmutable), '同じ時刻');
+        $carbon = CarbonImmutable::parse('2024-01-01 22:00:00');
+        $this->assertEquals(0, OvernightWorktime::getMinutes($carbon, $carbon), '同じ時刻');
     }
 
     /**

@@ -4,11 +4,27 @@ namespace Shimoning\Worktime;
 
 use Carbon\CarbonInterface;
 use Carbon\CarbonImmutable;
+use Shimoning\Worktime\Entities\Time;
 use Shimoning\Worktime\Utilities\Round;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
 class Basement
 {
+    /**
+     * 差分を Time オブジェクトとして取得する
+     *
+     * @param string|integer|CarbonInterface $start
+     * @param string|integer|CarbonInterface $end
+     * @return Time
+     */
+    static public function getDiffTime(
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
+    ): Time {
+        $diffSeconds = self::diffInSeconds($start, $end);
+        return Time::fromSeconds($diffSeconds);
+    }
+
     /**
      * 差分を分単位で取得する
      *

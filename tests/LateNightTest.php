@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use Carbon\CarbonImmutable;
 use Shimoning\Worktime\LateNight;
 use Shimoning\Worktime\Constants\RoundingMethod;
-use Carbon\CarbonImmutable;
 
 class LateNightTest extends TestCase
 {
@@ -73,13 +73,13 @@ class LateNightTest extends TestCase
      *
      * @return void
      */
-    public function test_parse_CarbonImmutable()
+    public function test_parse_carbon()
     {
-        $CarbonImmutable = CarbonImmutable::parse('2024-01-01 22:00:00');
-        $this->assertEquals(0, LateNight::getMinutes($CarbonImmutable, $CarbonImmutable), '同じ時刻');
+        $carbon = CarbonImmutable::parse('2024-01-01 22:00:00');
+        $this->assertEquals(0, LateNight::getMinutes($carbon, $carbon), '同じ時刻');
 
-        $CarbonImmutable2 = CarbonImmutable::parse('2024-01-01 23:00:01');
-        $this->assertEquals(60, LateNight::getMinutes($CarbonImmutable, $CarbonImmutable2), '1時間1秒');
+        $carbon2 = CarbonImmutable::parse('2024-01-01 23:00:01');
+        $this->assertEquals(60, LateNight::getMinutes($carbon, $carbon2), '1時間1秒');
     }
 
     /**

@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use Carbon\CarbonImmutable;
 use Shimoning\Worktime\Basement;
 use Shimoning\Worktime\Constants\RoundingMethod;
-use Carbon\CarbonImmutable;
 
 class BasementTest extends TestCase
 {
@@ -58,13 +58,52 @@ class BasementTest extends TestCase
      *
      * @return void
      */
-    public function test_diffInSeconds_parse_CarbonImmutable()
+    public function test_diffInSeconds_parse_carbon()
     {
-        $CarbonImmutable = CarbonImmutable::parse('2024-01-01 09:00:00');
-        $this->assertEquals(0, Basement::diffInSeconds($CarbonImmutable, $CarbonImmutable), '同じ時刻');
+        $carbon = CarbonImmutable::parse('2024-01-01 09:00:00');
+        $this->assertEquals(0, Basement::diffInSeconds($carbon, $carbon), '同じ時刻');
 
-        $CarbonImmutable2 = CarbonImmutable::parse('2024-01-01 10:00:01');
-        $this->assertEquals(3601, Basement::diffInSeconds($CarbonImmutable, $CarbonImmutable2), '1時間1秒');
+        $carbon2 = CarbonImmutable::parse('2024-01-01 10:00:01');
+        $this->assertEquals(3601, Basement::diffInSeconds($carbon, $carbon2), '1時間1秒');
+    }
+
+    public function test_getDiffTime()
+    {
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 09:00:00');
+        $this->assertEquals(0, $time->getMinutes(), '0分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 09:00:01');
+        $this->assertEquals(0, $time->getMinutes(), '0分');
+        $this->assertEquals(1, $time->getSeconds(), '1秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 09:00:01');
+        $this->assertEquals(0, $time->getMinutes(), '0分');
+        $this->assertEquals(1, $time->getSeconds(), '1秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 09:00:59');
+        $this->assertEquals(0, $time->getMinutes(), '0分');
+        $this->assertEquals(59, $time->getSeconds(), '59秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 09:01:00');
+        $this->assertEquals(1, $time->getMinutes(), '1分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:01', '2024-01-01 10:00:00');
+        $this->assertEquals(59, $time->getMinutes(), '59分');
+        $this->assertEquals(59, $time->getSeconds(), '59秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 10:00:00');
+        $this->assertEquals(60, $time->getMinutes(), '60分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 10:00:01');
+        $this->assertEquals(60, $time->getMinutes(), '60分');
+        $this->assertEquals(1, $time->getSeconds(), '1秒');
+
+        $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 10:40:01');
+        $this->assertEquals(100, $time->getMinutes(), '100分');
+        $this->assertEquals(1, $time->getSeconds(), '1秒');
     }
 
     /**
