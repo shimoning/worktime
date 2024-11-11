@@ -67,6 +67,11 @@ class BasementTest extends TestCase
         $this->assertEquals(3601, Basement::diffInSeconds($carbon, $carbon2), '1時間1秒');
     }
 
+    /**
+     * 差分を Time オブジェクトとして取得することを確認する
+     *
+     * @return void
+     */
     public function test_getDiffTime()
     {
         $time = Basement::getDiffTime('2024-01-01 09:00:00', '2024-01-01 09:00:00');

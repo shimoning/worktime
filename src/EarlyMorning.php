@@ -4,6 +4,7 @@ namespace Shimoning\Worktime;
 
 use Carbon\CarbonInterface;
 use Carbon\CarbonImmutable;
+use Shimoning\Worktime\Entities\Time;
 use Shimoning\Worktime\Utilities\Threshold;
 use Shimoning\Worktime\Utilities\Round;
 use Shimoning\Worktime\Constants\RoundingMethod;
@@ -16,6 +17,21 @@ use Shimoning\Worktime\Constants\RoundingMethod;
  */
 class EarlyMorning
 {
+    /**
+     * 早朝時間を Time オブジェクトとして取得する
+     *
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
+     * @return Time
+     */
+    static public function getDiffTime(
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
+    ): Time {
+        $diffSeconds = self::getSeconds($start, $end);
+        return Time::fromSeconds($diffSeconds);
+    }
+
     /**
      * 早朝時間を分単位で取得する
      *
@@ -98,8 +114,8 @@ class EarlyMorning
      * @param CarbonInterface $start
      * @param CarbonInterface $end
      * @param RoundingMethod $rounding
-     * @param integer $hour
-     * @return integer|float
+     * @param int $hour
+     * @return int|float
      */
     static private function getSecondsInternal(
         string|int|CarbonInterface $start,

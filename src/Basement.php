@@ -13,8 +13,8 @@ class Basement
     /**
      * 差分を Time オブジェクトとして取得する
      *
-     * @param string|integer|CarbonInterface $start
-     * @param string|integer|CarbonInterface $end
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
      * @return Time
      */
     static public function getDiffTime(

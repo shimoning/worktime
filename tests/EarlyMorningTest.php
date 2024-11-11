@@ -83,6 +83,34 @@ class EarlyMorningTest extends TestCase
     }
 
     /**
+     * 差分を Time オブジェクトとして取得することを確認する
+     *
+     * @return void
+     */
+    public function test_getDiffTime()
+    {
+        $time = EarlyMorning::getDiffTime('2024-01-01 02:00:00', '2024-01-01 02:00:00');
+        $this->assertEquals(0, $time->getMinutes(), '0分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = EarlyMorning::getDiffTime('2024-01-01 01:00:00', '2024-01-01 01:30:00');
+        $this->assertEquals(30, $time->getMinutes(), '30分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = EarlyMorning::getDiffTime('2024-01-01 00:00:00', '2024-01-01 05:00:00');
+        $this->assertEquals(300, $time->getMinutes(), '300分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = EarlyMorning::getDiffTime('2024-01-01 23:59:01', '2024-01-02 05:00:00');
+        $this->assertEquals(300, $time->getMinutes(), '300分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = EarlyMorning::getDiffTime('2024-01-01 00:00:00', '2024-01-01 05:00:01');
+        $this->assertEquals(300, $time->getMinutes(), '300分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+    }
+
+    /**
      * 秒を四捨五入することを確認する
      *
      * @return void
