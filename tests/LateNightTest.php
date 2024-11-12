@@ -69,7 +69,7 @@ class LateNightTest extends TestCase
     }
 
     /**
-     * CarbonImmutable がパースできることを確認する
+     * Carbon がパースできることを確認する
      *
      * @return void
      */

@@ -73,7 +73,7 @@ class OvernightWorktimeTest extends TestCase
     }
 
     /**
-     * CarbonImmutable がパースできることを確認する
+     * Carbon がパースできることを確認する
      *
      * @return void
      */
@@ -84,6 +84,38 @@ class OvernightWorktimeTest extends TestCase
 
         $carbon = CarbonImmutable::parse('2024-01-01 22:00:00');
         $this->assertEquals(0, OvernightWorktime::getMinutes($carbon, $carbon), '同じ時刻');
+    }
+
+    /**
+     * 差分を Time オブジェクトとして取得することを確認する
+     *
+     * @return void
+     */
+    public function test_getDiffTime()
+    {
+        $time = OvernightWorktime::getDiffTime('2024-01-01 23:00:00', '2024-01-01 23:00:00');
+        $this->assertEquals(0, $time->getMinutes(), '0分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = OvernightWorktime::getDiffTime('2024-01-01 02:00:00', '2024-01-01 02:30:00');
+        $this->assertEquals(30, $time->getMinutes(), '30分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = OvernightWorktime::getDiffTime('2024-01-01 22:00:01', '2024-01-02 04:59:59');
+        $this->assertEquals(419, $time->getMinutes(), '419分');
+        $this->assertEquals(58, $time->getSeconds(), '58秒');
+
+        $time = OvernightWorktime::getDiffTime('2024-01-01 22:00:00', '2024-01-02 05:00:00');
+        $this->assertEquals(420, $time->getMinutes(), '420分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = OvernightWorktime::getDiffTime('2024-01-01 21:59:01', '2024-01-02 05:00:00');
+        $this->assertEquals(420, $time->getMinutes(), '420分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
+
+        $time = OvernightWorktime::getDiffTime('2024-01-01 22:00:00', '2024-01-02 05:00:01');
+        $this->assertEquals(420, $time->getMinutes(), '420分');
+        $this->assertEquals(0, $time->getSeconds(), '0秒');
     }
 
     /**

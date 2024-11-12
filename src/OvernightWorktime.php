@@ -2,7 +2,8 @@
 
 namespace Shimoning\Worktime;
 
-use CarbonInterface\CarbonInterfaceInterface;
+use Carbon\CarbonInterface;
+use Shimoning\Worktime\Entities\Time;
 use Shimoning\Worktime\Utilities\Round;
 use Shimoning\Worktime\Constants\RoundingMethod;
 
@@ -14,6 +15,21 @@ use Shimoning\Worktime\Constants\RoundingMethod;
  */
 class OvernightWorktime
 {
+    /**
+     * 深夜時間を Time オブジェクトとして取得する
+     *
+     * @param string|int|CarbonInterface $start
+     * @param string|int|CarbonInterface $end
+     * @return Time
+     */
+    static public function getDiffTime(
+        string|int|CarbonInterface $start,
+        string|int|CarbonInterface $end,
+    ): Time {
+        $diffSeconds = self::getSeconds($start, $end);
+        return Time::fromSeconds($diffSeconds);
+    }
+
     /**
      * 深夜時間を分単位で取得する
      *
