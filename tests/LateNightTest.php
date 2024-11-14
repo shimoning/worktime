@@ -87,25 +87,25 @@ class LateNightTest extends TestCase
      *
      * @return void
      */
-    public function test_getDiffTime()
+    public function test_getTime()
     {
-        $time = LateNight::getDiffTime('2024-01-01 23:00:00', '2024-01-01 23:00:00');
+        $time = LateNight::getTime('2024-01-01 23:00:00', '2024-01-01 23:00:00');
         $this->assertEquals(0, $time->getMinutes(), '0分');
         $this->assertEquals(0, $time->getSeconds(), '0秒');
 
-        $time = LateNight::getDiffTime('2024-01-01 23:00:00', '2024-01-01 23:30:00');
+        $time = LateNight::getTime('2024-01-01 23:00:00', '2024-01-01 23:30:00');
         $this->assertEquals(30, $time->getMinutes(), '30分');
         $this->assertEquals(0, $time->getSeconds(), '0秒');
 
-        $time = LateNight::getDiffTime('2024-01-01 22:00:00', '2024-01-02 00:00:00');
+        $time = LateNight::getTime('2024-01-01 22:00:00', '2024-01-02 00:00:00');
         $this->assertEquals(120, $time->getMinutes(), '120分');
         $this->assertEquals(0, $time->getSeconds(), '0秒');
 
-        $time = LateNight::getDiffTime('2024-01-01 21:59:01', '2024-01-02 00:00:00');
+        $time = LateNight::getTime('2024-01-01 21:59:01', '2024-01-02 00:00:00');
         $this->assertEquals(120, $time->getMinutes(), '120分');
         $this->assertEquals(0, $time->getSeconds(), '0秒');
 
-        $time = LateNight::getDiffTime('2024-01-01 22:00:00', '2024-01-02 00:00:01');
+        $time = LateNight::getTime('2024-01-01 22:00:00', '2024-01-02 00:00:01');
         $this->assertEquals(120, $time->getMinutes(), '120分');
         $this->assertEquals(0, $time->getSeconds(), '0秒');
     }

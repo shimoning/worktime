@@ -24,7 +24,7 @@ class LateNight
      * @param string|int|CarbonInterface $end
      * @return Time
      */
-    static public function getDiffTime(
+    static public function getTime(
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
     ): Time {

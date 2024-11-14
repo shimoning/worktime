@@ -17,7 +17,7 @@ class Basement
      * @param string|int|CarbonInterface $end
      * @return Time
      */
-    static public function getDiffTime(
+    static public function diffInTime(
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
     ): Time {
