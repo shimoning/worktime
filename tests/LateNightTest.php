@@ -58,14 +58,14 @@ class LateNightTest extends TestCase
     public function test_parse_unixtime()
     {
         // 0 = 1970-01-01 00:00:00
-        $this->assertEquals(0, LateNight::getMinutes(0, 0), '同じ時刻');
-        $this->assertEquals(0, LateNight::getMinutes(0, 79201), '1秒');
-        $this->assertEquals(1, LateNight::getMinutes(0, 79260), '1分');
+        $this->assertSame(0, LateNight::getMinutes(0, 0), '同じ時刻');
+        $this->assertSame(0, LateNight::getMinutes(0, 79201), '1秒');
+        $this->assertSame(1, LateNight::getMinutes(0, 79260), '1分');
 
         // 1704146400 = 2024-01-01 22:00:00
-        $this->assertEquals(0, LateNight::getMinutes(1704146400, 1704146400), '同じ時刻');
-        $this->assertEquals(0, LateNight::getMinutes(1704146400, 1704146401), '1秒');
-        $this->assertEquals(1, LateNight::getMinutes(1704146400, 1704146460), '1分');
+        $this->assertSame(0, LateNight::getMinutes(1704146400, 1704146400), '同じ時刻');
+        $this->assertSame(0, LateNight::getMinutes(1704146400, 1704146401), '1秒');
+        $this->assertSame(1, LateNight::getMinutes(1704146400, 1704146460), '1分');
     }
 
     /**
@@ -76,10 +76,10 @@ class LateNightTest extends TestCase
     public function test_parse_carbon()
     {
         $carbon = CarbonImmutable::parse('2024-01-01 22:00:00');
-        $this->assertEquals(0, LateNight::getMinutes($carbon, $carbon), '同じ時刻');
+        $this->assertSame(0, LateNight::getMinutes($carbon, $carbon), '同じ時刻');
 
         $carbon2 = CarbonImmutable::parse('2024-01-01 23:00:01');
-        $this->assertEquals(60, LateNight::getMinutes($carbon, $carbon2), '1時間1秒');
+        $this->assertSame(60, LateNight::getMinutes($carbon, $carbon2), '1時間1秒');
     }
 
     /**
@@ -90,24 +90,24 @@ class LateNightTest extends TestCase
     public function test_getTime()
     {
         $time = LateNight::getTime('2024-01-01 23:00:00', '2024-01-01 23:00:00');
-        $this->assertEquals(0, $time->getMinutes(), '0分');
-        $this->assertEquals(0, $time->getSeconds(), '0秒');
+        $this->assertSame(0, $time->getMinutes(), '0分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
 
         $time = LateNight::getTime('2024-01-01 23:00:00', '2024-01-01 23:30:00');
-        $this->assertEquals(30, $time->getMinutes(), '30分');
-        $this->assertEquals(0, $time->getSeconds(), '0秒');
+        $this->assertSame(30, $time->getMinutes(), '30分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
 
         $time = LateNight::getTime('2024-01-01 22:00:00', '2024-01-02 00:00:00');
-        $this->assertEquals(120, $time->getMinutes(), '120分');
-        $this->assertEquals(0, $time->getSeconds(), '0秒');
+        $this->assertSame(120, $time->getMinutes(), '120分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
 
         $time = LateNight::getTime('2024-01-01 21:59:01', '2024-01-02 00:00:00');
-        $this->assertEquals(120, $time->getMinutes(), '120分');
-        $this->assertEquals(0, $time->getSeconds(), '0秒');
+        $this->assertSame(120, $time->getMinutes(), '120分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
 
         $time = LateNight::getTime('2024-01-01 22:00:00', '2024-01-02 00:00:01');
-        $this->assertEquals(120, $time->getMinutes(), '120分');
-        $this->assertEquals(0, $time->getSeconds(), '0秒');
+        $this->assertSame(120, $time->getMinutes(), '120分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
     }
 
     /**
@@ -117,32 +117,32 @@ class LateNightTest extends TestCase
      */
     public function test_round()
     {
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00'), '範囲外');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00'), '範囲外~夜間開始丁度');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:01'), '範囲外夜間開始後1秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00'), '範囲外');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00'), '範囲外~夜間開始丁度');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:01'), '範囲外夜間開始後1秒');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00'), '同じ時間');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:00'), '開始時刻');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00'), '同じ時間');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:00'), '開始時刻');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01'), '1秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00'), '1分');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01'), '1秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00'), '1分');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29'), '29秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30'), '30秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29'), '29秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30'), '30秒');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:00'), '1時間');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:01'), '1時間1秒');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:00'), '1時間');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:01'), '1時間1秒');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00'), '夜間開始終了丁度');
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 01:00:00'), '夜間開始終了跨ぎ');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00'), '夜間開始終了丁度');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 01:00:00'), '夜間開始終了跨ぎ');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00'), '夜間開始前終了丁度');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00'), '夜間開始後終了跨ぎ');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00'), '夜間開始前終了丁度');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00'), '夜間開始後終了跨ぎ');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 23:00:00'), '夜間開始前終了前');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 23:00:00'), '夜間開始前終了前');
 
-        $this->assertEquals(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 23:00:00'), '2連続夜間');
-        $this->assertEquals(300, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-03 23:00:00'), '3連続夜間');
+        $this->assertSame(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 23:00:00'), '2連続夜間');
+        $this->assertSame(300, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-03 23:00:00'), '3連続夜間');
     }
 
     /**
@@ -152,32 +152,32 @@ class LateNightTest extends TestCase
      */
     public function test_ceil()
     {
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00', RoundingMethod::CEIL), '範囲外');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00', RoundingMethod::CEIL), '範囲外~夜間開始丁度');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:01', RoundingMethod::CEIL), '範囲外夜間開始後1秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00', RoundingMethod::CEIL), '範囲外');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00', RoundingMethod::CEIL), '範囲外~夜間開始丁度');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:01', RoundingMethod::CEIL), '範囲外夜間開始後1秒');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00', RoundingMethod::CEIL), '同じ時間');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:00', RoundingMethod::CEIL), '開始時刻');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00', RoundingMethod::CEIL), '同じ時間');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:00', RoundingMethod::CEIL), '開始時刻');
 
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01', RoundingMethod::CEIL), '1秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00', RoundingMethod::CEIL), '1分');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01', RoundingMethod::CEIL), '1秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00', RoundingMethod::CEIL), '1分');
 
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29', RoundingMethod::CEIL), '29秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30', RoundingMethod::CEIL), '30秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29', RoundingMethod::CEIL), '29秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30', RoundingMethod::CEIL), '30秒');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:00', RoundingMethod::CEIL), '1時間');
-        $this->assertEquals(61, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:01', RoundingMethod::CEIL), '1時間1秒');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:00', RoundingMethod::CEIL), '1時間');
+        $this->assertSame(61, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:01', RoundingMethod::CEIL), '1時間1秒');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00', RoundingMethod::CEIL), '夜間開始終了丁度');
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 01:00:00', RoundingMethod::CEIL), '夜間開始終了跨ぎ');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00', RoundingMethod::CEIL), '夜間開始終了丁度');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 01:00:00', RoundingMethod::CEIL), '夜間開始終了跨ぎ');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00', RoundingMethod::CEIL), '夜間開始前終了丁度');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00', RoundingMethod::CEIL), '夜間開始後終了跨ぎ');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00', RoundingMethod::CEIL), '夜間開始前終了丁度');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00', RoundingMethod::CEIL), '夜間開始後終了跨ぎ');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 23:00:00', RoundingMethod::CEIL), '夜間開始前終了前');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 23:00:00', RoundingMethod::CEIL), '夜間開始前終了前');
 
-        $this->assertEquals(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 23:00:00', RoundingMethod::CEIL), '2連続夜間');
-        $this->assertEquals(300, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-03 23:00:00', RoundingMethod::CEIL), '3連続夜間');
+        $this->assertSame(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 23:00:00', RoundingMethod::CEIL), '2連続夜間');
+        $this->assertSame(300, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-03 23:00:00', RoundingMethod::CEIL), '3連続夜間');
     }
 
     /**
@@ -187,32 +187,32 @@ class LateNightTest extends TestCase
      */
     public function test_floor()
     {
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00', RoundingMethod::FLOOR), '範囲外');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00', RoundingMethod::FLOOR), '範囲外~夜間開始丁度');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:01', RoundingMethod::FLOOR), '範囲外夜間開始後1秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00', RoundingMethod::FLOOR), '範囲外');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00', RoundingMethod::FLOOR), '範囲外~夜間開始丁度');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:01', RoundingMethod::FLOOR), '範囲外夜間開始後1秒');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00', RoundingMethod::FLOOR), '同じ時間');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:00', RoundingMethod::FLOOR), '開始時刻');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00', RoundingMethod::FLOOR), '同じ時間');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 22:00:00', RoundingMethod::FLOOR), '開始時刻');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01', RoundingMethod::FLOOR), '1秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00', RoundingMethod::FLOOR), '1分');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01', RoundingMethod::FLOOR), '1秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00', RoundingMethod::FLOOR), '1分');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29', RoundingMethod::FLOOR), '29秒');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30', RoundingMethod::FLOOR), '30秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29', RoundingMethod::FLOOR), '29秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30', RoundingMethod::FLOOR), '30秒');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:00', RoundingMethod::FLOOR), '1時間');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:01', RoundingMethod::FLOOR), '1時間1秒');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:00', RoundingMethod::FLOOR), '1時間');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-01 23:00:01', RoundingMethod::FLOOR), '1時間1秒');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '夜間開始終了丁度');
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 01:00:00', RoundingMethod::FLOOR), '夜間開始終了跨ぎ');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 22:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '夜間開始終了丁度');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 01:00:00', RoundingMethod::FLOOR), '夜間開始終了跨ぎ');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '夜間開始前終了丁度');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00', RoundingMethod::FLOOR), '夜間開始後終了跨ぎ');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00', RoundingMethod::FLOOR), '夜間開始前終了丁度');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00', RoundingMethod::FLOOR), '夜間開始後終了跨ぎ');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 23:00:00', RoundingMethod::FLOOR), '夜間開始前終了前');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 23:00:00', RoundingMethod::FLOOR), '夜間開始前終了前');
 
-        $this->assertEquals(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 23:00:00', RoundingMethod::FLOOR), '2連続夜間');
-        $this->assertEquals(300, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-03 23:00:00', RoundingMethod::FLOOR), '3連続夜間');
+        $this->assertSame(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 23:00:00', RoundingMethod::FLOOR), '2連続夜間');
+        $this->assertSame(300, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-03 23:00:00', RoundingMethod::FLOOR), '3連続夜間');
     }
 
     /**
@@ -222,31 +222,31 @@ class LateNightTest extends TestCase
      */
     public function test_hour()
     {
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00', RoundingMethod::ROUND, 21), '範囲外: -1');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00', RoundingMethod::ROUND, 23), '範囲外: +1');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 21:00:01', RoundingMethod::ROUND, 21), '範囲外~深夜開始丁度');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 06:00:00', '2024-01-01 21:00:00', RoundingMethod::ROUND, 21), '範囲外: -1');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 22:00:00', RoundingMethod::ROUND, 23), '範囲外: +1');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 19:00:00', '2024-01-01 21:00:01', RoundingMethod::ROUND, 21), '範囲外~深夜開始丁度');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00', RoundingMethod::ROUND, 21), '同じ時間');
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 21:00:00', RoundingMethod::ROUND, 21), '開始時刻');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:00', RoundingMethod::ROUND, 21), '同じ時間');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 21:00:00', RoundingMethod::ROUND, 21), '開始時刻');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01', RoundingMethod::ROUND, 21), '1秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00', RoundingMethod::ROUND, 21), '1分');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:01', RoundingMethod::ROUND, 21), '1秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:01:00', RoundingMethod::ROUND, 21), '1分');
 
-        $this->assertEquals(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29', RoundingMethod::ROUND, 21), '29秒');
-        $this->assertEquals(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30', RoundingMethod::ROUND, 21), '30秒');
+        $this->assertSame(0, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:29', RoundingMethod::ROUND, 21), '29秒');
+        $this->assertSame(1, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-01 23:00:30', RoundingMethod::ROUND, 21), '30秒');
 
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 22:00:00', RoundingMethod::ROUND, 21), '1時間');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 22:00:01', RoundingMethod::ROUND, 21), '1時間1秒');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 22:00:00', RoundingMethod::ROUND, 21), '1時間');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-01 22:00:01', RoundingMethod::ROUND, 21), '1時間1秒');
 
-        $this->assertEquals(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00', RoundingMethod::ROUND, 21), '夜間開始終了丁度');
-        $this->assertEquals(180, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-02 01:00:00', RoundingMethod::ROUND, 21), '夜間開始終了跨ぎ');
+        $this->assertSame(180, LateNight::getMinutes('2024-01-01 21:00:00', '2024-01-02 00:00:00', RoundingMethod::ROUND, 21), '夜間開始終了丁度');
+        $this->assertSame(180, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-02 01:00:00', RoundingMethod::ROUND, 21), '夜間開始終了跨ぎ');
 
-        $this->assertEquals(180, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-02 00:00:00', RoundingMethod::ROUND, 21), '夜間開始前終了丁度');
-        $this->assertEquals(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00', RoundingMethod::ROUND, 21), '夜間開始後終了跨ぎ');
+        $this->assertSame(180, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-02 00:00:00', RoundingMethod::ROUND, 21), '夜間開始前終了丁度');
+        $this->assertSame(60, LateNight::getMinutes('2024-01-01 23:00:00', '2024-01-02 01:00:00', RoundingMethod::ROUND, 21), '夜間開始後終了跨ぎ');
 
-        $this->assertEquals(120, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-01 23:00:00', RoundingMethod::ROUND, 21), '夜間開始前終了前');
+        $this->assertSame(120, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-01 23:00:00', RoundingMethod::ROUND, 21), '夜間開始前終了前');
 
-        $this->assertEquals(300, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-02 23:00:00', RoundingMethod::ROUND, 21), '2連続夜間');
-        $this->assertEquals(480, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-03 23:00:00', RoundingMethod::ROUND, 21), '3連続夜間');
+        $this->assertSame(300, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-02 23:00:00', RoundingMethod::ROUND, 21), '2連続夜間');
+        $this->assertSame(480, LateNight::getMinutes('2024-01-01 20:00:00', '2024-01-03 23:00:00', RoundingMethod::ROUND, 21), '3連続夜間');
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "shimoning/worktime",
-    "version": "0.0.5",
+    "version": "0.1.0",
     "description": "労働時間などを計算する",
     "minimum-stability": "stable",
     "type": "library",
@@ -19,7 +19,8 @@
         "overtime",
         "midnight",
         "early morning",
-        "extra work"
+        "extra work",
+        "shift"
     ],
     "require": {
         "php": ">=8.1",
