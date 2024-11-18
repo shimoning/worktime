@@ -108,6 +108,10 @@ class EarlyMorningTest extends TestCase
         $time = EarlyMorning::getTime('2024-01-01 00:00:00', '2024-01-01 05:00:01');
         $this->assertSame(300, $time->getMinutes(), '300分');
         $this->assertSame(0, $time->getSeconds(), '0秒');
+
+        $time = EarlyMorning::getTime('2024-01-01 00:00:00', '2024-01-01 05:00:01', 4);
+        $this->assertSame(240, $time->getMinutes(), '240分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
     }
 
     /**

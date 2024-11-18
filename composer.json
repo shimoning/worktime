@@ -1,6 +1,6 @@
 {
     "name": "shimoning/worktime",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "労働時間などを計算する",
     "minimum-stability": "stable",
     "type": "library",

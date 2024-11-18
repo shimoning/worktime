@@ -22,13 +22,15 @@ class EarlyMorning
      *
      * @param string|int|CarbonInterface $start
      * @param string|int|CarbonInterface $end
+     * @param int $hour 早朝が終わる時間 (default: 5時)
      * @return Time
      */
     static public function getTime(
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
+        int $hour = 5,
     ): Time {
-        $diffSeconds = self::getSeconds($start, $end);
+        $diffSeconds = self::getSeconds($start, $end, $hour);
         return Time::fromSeconds($diffSeconds);
     }
 

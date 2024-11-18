@@ -22,13 +22,15 @@ class LateNight
      *
      * @param string|int|CarbonInterface $start
      * @param string|int|CarbonInterface $end
+     * @param int $hour 夜間が始まる時間 (default: 22時)
      * @return Time
      */
     static public function getTime(
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
+        int $hour = 22,
     ): Time {
-        $diffSeconds = self::getSeconds($start, $end);
+        $diffSeconds = self::getSeconds($start, $end, $hour);
         return Time::fromSeconds($diffSeconds);
     }
 

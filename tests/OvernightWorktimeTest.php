@@ -116,6 +116,10 @@ class OvernightWorktimeTest extends TestCase
         $time = OvernightWorktime::getTime('2024-01-01 22:00:00', '2024-01-02 05:00:01');
         $this->assertSame(420, $time->getMinutes(), '420分');
         $this->assertSame(0, $time->getSeconds(), '0秒');
+
+        $time = OvernightWorktime::getTime('2024-01-01 22:00:00', '2024-01-02 05:00:01', 23, 4);
+        $this->assertSame(300, $time->getMinutes(), '300分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
     }
 
     /**

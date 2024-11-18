@@ -20,13 +20,17 @@ class OvernightWorktime
      *
      * @param string|int|CarbonInterface $start
      * @param string|int|CarbonInterface $end
+     * @param int $lateNightStartHour 夜間が始まる時間 (default: 22時)
+     * @param int $earlyMorningEndHour 早朝が終わる時間 (default: 5時)
      * @return Time
      */
     static public function getTime(
         string|int|CarbonInterface $start,
         string|int|CarbonInterface $end,
+        int $lateNightStartHour = 22,
+        int $earlyMorningEndHour = 5,
     ): Time {
-        $diffSeconds = self::getSeconds($start, $end);
+        $diffSeconds = self::getSeconds($start, $end, $lateNightStartHour, $earlyMorningEndHour);
         return Time::fromSeconds($diffSeconds);
     }
 

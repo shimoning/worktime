@@ -108,6 +108,10 @@ class LateNightTest extends TestCase
         $time = LateNight::getTime('2024-01-01 22:00:00', '2024-01-02 00:00:01');
         $this->assertSame(120, $time->getMinutes(), '120分');
         $this->assertSame(0, $time->getSeconds(), '0秒');
+
+        $time = LateNight::getTime('2024-01-01 22:00:00', '2024-01-02 00:00:01', 23);
+        $this->assertSame(60, $time->getMinutes(), '60分');
+        $this->assertSame(0, $time->getSeconds(), '0秒');
     }
 
     /**
